@@ -53,7 +53,11 @@ const ExcelConverter = () => {
 
     if (selectedAddress.주소2) {
       const filteredData = initialData.filter(item => item.주소1 === selectedAddress.주소1 && item.주소2 === selectedAddress.주소2);
-      const 주소3Options = Array.from(new Set(filteredData.map(a => a.주소3))).map(a => ({ value: a, label: a }));
+      const 주소3Options = Array.from(new Set(filteredData.map(a => {
+        // 주소3 옵션의 label에 기관명(B)을 추가하여 표시합니다.
+        const labelWithB = `${a.주소3} - ${a.B}`; // 예: "주소3 - 기관명"
+        return { value: a.주소3, label: labelWithB };
+      })));
       setOptions(prev => ({ ...prev, 주소3: 주소3Options }));
     } else {
       setOptions(prev => ({ ...prev, 주소3: [] }));
