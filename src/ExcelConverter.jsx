@@ -142,7 +142,7 @@ const ExcelConverter = () => {
     loading="lazy"
     allowFullScreen
     src={mapUrl}></iframe>}
-  <div style={{height:"200px"}}>
+  <div style={{height:"250px"}}>
   {selectedData ? (
     <div>
       <div>
