@@ -36,3 +36,196 @@
     transform: rotate(360deg);
   }
 }
+
+/* App.css */
+/* ====== 공통 스타일 ====== */
+.app-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+
+.section-title {
+  color: #2c3e50;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid #6574cd;
+  display: inline-block;
+}
+
+/* ====== 샘플 섹션 ====== */
+.sample-section {
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+  border: 2px solid #dde2ff;
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.sample-section::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 100px;
+  height: 100px;
+  background: #6574cd20;
+  border-radius: 50%;
+}
+
+/* ====== 업로드 영역 ====== */
+.upload-container {
+  background: #ffffff;
+  border: 2px dashed #bdc7ff;
+  border-radius: 12px;
+  padding: 2.5rem;
+  margin: 2rem 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.upload-container:hover {
+  border-color: #6574cd;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(101, 116, 205, 0.1);
+}
+
+.file-input-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 1rem 2rem;
+  background: #6574cd;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.file-input-label:hover {
+  background: #5563c1;
+  transform: scale(1.02);
+}
+
+/* ====== 에디터 영역 ====== */
+.editor-wrapper {
+  border: 1px solid #e3e8ff;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 2rem 0;
+  box-shadow: 0 4px 6px rgba(101, 116, 205, 0.05);
+}
+
+.preview-box {
+  background: #f8f9ff;
+  border: 2px solid #e3e8ff;
+  border-radius: 8px;
+  padding: 2rem;
+  margin: 1rem 0;
+  min-height: 300px;
+}
+
+/* ====== 결과 테이블 ====== */
+.results-container {
+  background: #ffffff;
+  border: 1px solid #e3e8ff;
+  border-radius: 12px;
+  margin: 2rem 0;
+  overflow: hidden;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.results-table th {
+  background: #6574cd;
+  color: white;
+  padding: 1.2rem;
+  text-align: left;
+}
+
+.results-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f0f2ff;
+}
+
+.results-table tr:nth-child(even) {
+  background: #f8f9ff;
+}
+
+/* ====== 상태 표시 ====== */
+.status-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.status-success {
+  background: #48bb7830;
+  color: #48bb78;
+}
+
+.status-error {
+  background: #f5656530;
+  color: #f56565;
+}
+
+/* ====== 버튼 스타일 ====== */
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primary-button {
+  background: #6574cd;
+  color: white;
+}
+
+.primary-button:hover {
+  background: #5563c1;
+  box-shadow: 0 4px 12px rgba(101, 116, 205, 0.3);
+}
+
+.secondary-button {
+  background: #e3e8ff;
+  color: #6574cd;
+}
+
+.secondary-button:hover {
+  background: #d5dcff;
+}
+
+/* ====== 반응형 디자인 ====== */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 1rem;
+    margin: 1rem;
+    border-radius: 8px;
+  }
+
+  .upload-container {
+    padding: 1.5rem;
+  }
+
+  .results-table th,
+  .results-table td {
+    padding: 0.8rem;
+  }
+}
