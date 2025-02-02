@@ -1,142 +1,266 @@
-.App {
-  text-align: center;
+/* styles.css */
+
+/* 기본 리셋 및 폰트 설정 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* App.css */
-/* ====== 공통 스타일 ====== */
-.app-container {
-  max-width: 1200px;
+/* 전체 컨테이너 스타일 */
+.email-dashboard {
+  max-width: 1000px;
   margin: 2rem auto;
   padding: 2rem;
   background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
 }
 
-.section-title {
-  color: #2c3e50;
-  font-size: 1.8rem;
+/* 메인 타이틀 */
+.main-title {
+  font-size: 2.2rem;
+  color: #2a52be;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  letter-spacing: -0.5px;
+  animation: fadeInUp 0.6s ease;
+}
+
+/* 경고 배너 */
+.warning-banner {
+  background: #fff9db;
+  color: red;
+  border-left: 4px solid #ffe066;
+  border-radius: 6px;
+  padding: 1.2rem;
   margin-bottom: 2rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 3px solid #6574cd;
-  display: inline-block;
+  animation: slideIn 0.5s ease;
 }
 
-/* ====== 샘플 섹션 ====== */
-.sample-section {
-  background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
-  border: 2px solid #dde2ff;
-  border-radius: 12px;
-  padding: 2rem;
-  margin: 2rem 0;
-  position: relative;
-  overflow: hidden;
+.warning-text {
+  color: #5f3f16;
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
-.sample-section::before {
-  content: "";
-  position: absolute;
-  top: -50px;
-  right: -50px;
-  width: 100px;
-  height: 100px;
-  background: #6574cd20;
-  border-radius: 50%;
-}
-
-/* ====== 업로드 영역 ====== */
-.upload-container {
-  background: #ffffff;
-  border: 2px dashed #bdc7ff;
-  border-radius: 12px;
-  padding: 2.5rem;
-  margin: 2rem 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.upload-container:hover {
-  border-color: #6574cd;
-  transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(101, 116, 205, 0.1);
-}
-
-.file-input-label {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 1rem 2rem;
-  background: #6574cd;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.file-input-label:hover {
-  background: #5563c1;
-  transform: scale(1.02);
-}
-
-/* ====== 에디터 영역 ====== */
-.editor-wrapper {
-  border: 1px solid #e3e8ff;
-  border-radius: 12px;
-  overflow: hidden;
-  margin: 2rem 0;
-  box-shadow: 0 4px 6px rgba(101, 116, 205, 0.05);
-}
-
-.preview-box {
+/* 샘플 다운로드 섹션 */
+.download-guide {
   background: #f8f9ff;
-  border: 2px solid #e3e8ff;
   border-radius: 8px;
-  padding: 2rem;
-  margin: 1rem 0;
-  min-height: 300px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid #e3e8ff;
 }
 
-/* ====== 결과 테이블 ====== */
-.results-container {
-  background: #ffffff;
-  border: 1px solid #e3e8ff;
-  border-radius: 12px;
+.section-subtitle {
+  font-size: 1.2rem;
+  color: #3b4d8f;
+  margin-bottom: 1rem;
+}
+
+.sample-instruction {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-top: 0.8rem;
+}
+
+/* 버튼 공통 스타일 */
+.btn {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.primary {
+  background: #2a52be;
+  color: white;
+}
+
+.primary:hover:not(:disabled) {
+  background: #1d3d8c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(42,82,190,0.2);
+}
+
+.secondary {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.secondary:hover {
+  background: #dee2e6;
+  transform: translateY(-1px);
+}
+
+/* 폼 요소 스타일 */
+.email-form {
   margin: 2rem 0;
+}
+
+.form-group {
+  margin-bottom: 1.8rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.8rem;
+  color: #343a40;
+  font-weight: 500;
+}
+
+.file-input {
+  display: block;
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px dashed #dee2e6;
+  border-radius: 8px;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+.file-input:hover {
+  border-color: #2a52be;
+  background: #ffffff;
+}
+
+/* 업로드 통계 스타일 */
+.upload-stats {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  animation: fadeIn 0.4s ease;
+}
+
+.stat-item {
+  font-size: 0.95rem;
+  color: #495057;
+  margin: 0.4rem 0;
+}
+
+.error-stat {
+  color: #dc3545;
+  font-weight: 500;
+}
+
+.warning-stat {
+  color: #ff922b;
+  font-weight: 500;
+}
+
+/* 제목 입력 필드 */
+.subject-input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.subject-input:focus {
+  border-color: #2a52be;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(42,82,190,0.1);
+}
+
+/* 에디터 섹션 */
+.editor-section {
+  margin: 2rem 0;
+}
+
+.editor-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.toggle-preview {
+  background: #f1f3f5;
+  padding: 0.6rem 1.2rem;
+}
+
+.toggle-preview:hover {
+  background: #e9ecef;
+}
+
+.variable-info {
+  color: #868e96;
+  font-size: 0.9rem;
+}
+
+/* 리치 에디터 스타일 */
+.quill-wrapper {
+  border-radius: 8px;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.rich-editor {
+  height: 400px;
+  border: none !important;
+}
+
+.rich-editor .ql-toolbar {
+  border: none;
+  background: #f8f9fa;
+  padding: 0.8rem;
+}
+
+.rich-editor .ql-container {
+  border: none !important;
+  font-size: 1rem;
+}
+
+/* 미리보기 영역 */
+.preview-content {
+  padding: 2rem;
+  border: 2px solid #f1f3f5;
+  border-radius: 8px;
+  min-height: 400px;
+  background: #ffffff;
+  line-height: 1.6;
+  animation: fadeIn 0.4s ease;
+}
+
+/* 결과 섹션 */
+.results-section {
+  margin-top: 3rem;
+  animation: slideInUp 0.5s ease;
+}
+
+.results-title {
+  color: #343a40;
+  margin-bottom: 1.5rem;
+}
+
+.download-results {
+  margin-bottom: 1.5rem;
+}
+
+/* 결과 테이블 스타일 */
+.results-table-container {
+  max-height: 500px;
+  overflow-y: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .results-table {
@@ -145,87 +269,117 @@
   background: white;
 }
 
-.results-table th {
-  background: #6574cd;
+.table-header {
+  position: sticky;
+  top: 0;
+  background: #2a52be;
   color: white;
-  padding: 1.2rem;
-  text-align: left;
 }
 
-.results-table td {
+.table-header th {
   padding: 1rem;
-  border-bottom: 1px solid #f0f2ff;
-}
-
-.results-table tr:nth-child(even) {
-  background: #f8f9ff;
-}
-
-/* ====== 상태 표시 ====== */
-.status-badge {
-  display: inline-block;
-  padding: 0.4rem 0.8rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
+  text-align: left;
   font-weight: 500;
 }
 
-.status-success {
-  background: #48bb7830;
-  color: #48bb78;
+.table-body td {
+  padding: 1rem;
+  border-bottom: 1px solid #f1f3f5;
 }
 
-.status-error {
-  background: #f5656530;
-  color: #f56565;
+.table-row:hover {
+  background: #f8f9ff;
 }
 
-/* ====== 버튼 스타일 ====== */
-.action-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0.8rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.success-row .status-cell {
+  color: #2b8a3e;
+  font-weight: 500;
 }
 
-.primary-button {
-  background: #6574cd;
-  color: white;
+.error-row .status-cell {
+  color: #c92a2a;
+  font-weight: 500;
 }
 
-.primary-button:hover {
-  background: #5563c1;
-  box-shadow: 0 4px 12px rgba(101, 116, 205, 0.3);
+/* 애니메이션 키프레임 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-.secondary-button {
-  background: #e3e8ff;
-  color: #6574cd;
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.secondary-button:hover {
-  background: #d5dcff;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-/* ====== 반응형 디자인 ====== */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 로딩 버튼 효과 */
+.submit-btn.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-btn.loading:after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.2);
+  left: 0;
+  top: 0;
+  animation: loadingPulse 1.5s infinite;
+}
+
+@keyframes loadingPulse {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* 반응형 디자인 */
 @media (max-width: 768px) {
-  .app-container {
+  .email-dashboard {
     padding: 1rem;
     margin: 1rem;
-    border-radius: 8px;
   }
 
-  .upload-container {
-    padding: 1.5rem;
+  .main-title {
+    font-size: 1.8rem;
   }
 
-  .results-table th,
-  .results-table td {
+  .quill-wrapper {
+    height: 300px;
+  }
+
+  .table-header th,
+  .table-body td {
     padding: 0.8rem;
+    font-size: 0.9rem;
   }
 }
