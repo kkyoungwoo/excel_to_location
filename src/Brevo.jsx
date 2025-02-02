@@ -5,13 +5,14 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import "./App.css"
 
-// 샌드그리드 자동 이메일 발송 웹사이트
+// Brove 자동 이메일 발송 웹사이트
+const mailservice = "Brove"
 
 // #################### 설정 영역 - 필요시 수정 ####################
-const SENDGRID_API_KEY = 'your_sendgrid_api_key'; // SendGrid API 키
-const FROM_EMAIL = 'your_email@example.com'; // 발신자 이메일
-const BATCH_SIZE = 100; // 1회 발송량 (한 번에 보낼 이메일 수)
-const DELAY_TIME = 1000; // 배치 간 지연 시간(ms)
+const BREVO_API_KEY = 'your_brevo_api_key'; // Brevo API 키
+const FROM_EMAIL = 'your_email@example.com'; // 발신자 이메일 (Brevo 인증 필요)
+const BATCH_SIZE = 50; // 1회 발송량 (한 번에 보낼 이메일 수)
+const DELAY_TIME = 2000; // 배치 간 지연 시간(ms)
 const SENDGRID_IP = '???.???.???.???'; // SendGrid 발송 IP (사용자 계정에서 확인 필요)
 // ##############################################################
 
@@ -82,10 +83,10 @@ const containsSpamWords = (content) => {
 
 // 오류 메시지 한국어 매핑
 const ERROR_MESSAGES = {
-  'Invalid email address': '유효하지 않은 이메일 형식',
-  'The from email does not contain a valid address': '발신자 이메일 오류',
-  'You do not have permission to send mail': 'API 권한 문제',
-  'Maximum number of recipients per message exceeded': '수신자 수 초과'
+  'Invalid email': '유효하지 않은 이메일 형식',
+  'Sender not authenticated': '발신자 이메일 미등록',
+  'Unauthorized': 'API 키 인증 실패',
+  'Missing parameter': '필수 파라미터 누락'
 };
 
 function App() {
@@ -103,9 +104,10 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
 
+  // 효과 훅 업데이트
   useEffect(() => {
-    if (!SENDGRID_API_KEY || !FROM_EMAIL) {
-      alert('SendGrid API 키와 발신자 이메일을 설정해주세요!');
+    if (!BREVO_API_KEY || !FROM_EMAIL) {
+      alert('Brevo API 키와 발신자 이메일을 설정해주세요!');
     }
   }, []);
 
@@ -168,15 +170,15 @@ function App() {
     return new Promise((resolve) => {
       reader.onload = (e) => {
         const text = e.target.result;
-        const rows = text.split('\n').slice(1); // 헤더 제거
+        const rows = text.split(/\r?\n/).slice(1); // 줄바꿈 정규화
         const emails = rows
-  .filter(row => row.trim()) // 빈 줄 제거
-  .map(row => {
-    const [email, name] = row.split(',').map(cell => cell?.trim());
-    return { email, name: name || '' };
-  })
-  .filter(r => r.email); // 이메일이 없는 데이터 필터링
-
+          .filter(row => row.trim())
+          .map(row => {
+            const [email, name] = row.split(',').map(cell => cell?.trim());
+            return { email, name: name || '' };
+          })
+          .filter(r => r.email); // 이메일 없는 데이터 제거
+  
         const { valid, invalid, duplicateCount } = processEmails(emails);
         setStats({
           total: emails.length,
@@ -184,51 +186,49 @@ function App() {
           invalid: invalid.length,
           duplicates: duplicateCount
         });
-        resolve(valid);
+  
+        // 여기서 valid 배열의 각 객체를 렌더링 가능하도록 문자열로 변환
+        const validEmails = valid.map(v => v.email);
+        resolve(validEmails);
       };
     });
   };
+   
 
   // 지연 처리 함수
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-  // 배치 발송 처리
+  // 배치 발송 시 Brevo의 배치 기능 활용
   const sendBatchEmails = async (batch) => {
-      // 제목과 내용에서 스팸 단어 포함 여부 확인
-    if (containsSpamWords(subject) || containsSpamWords(content)) {
-      alert("이메일 제목 또는 내용에 스팸 단어가 포함되어 있습니다. 내용을 수정해주세요.");
-      return; // 스팸 단어가 있을 경우 이메일 발송 중지
+    try {
+      console.log("이메일 발송 요청 시작:", batch);
+  
+      const response = await axios.post('https://api.brevo.com/v3/smtp/email', {
+        sender: { email: FROM_EMAIL },
+        to: batch.map(({ email }) => ({ email })),
+        subject: batch.map(({ name }) => EMAIL_SUBJECT.replace(/{담당자}/g, name)),
+        htmlContent: batch.map(({ name }) => content.replace(/{담당자}/g, name))
+      }, {
+        headers: {
+          'api-key': BREVO_API_KEY,
+          'Content-Type': 'application/json'
+        }
+      });
+  
+      console.log("이메일 발송 성공:", response.data);
+  
+      return batch.map(email => ({ email, status: '성공', error: '' }));
+    } catch (error) {
+      console.error("이메일 발송 실패:", error.response?.data || error.message);
+  
+      return batch.map(email => ({
+        email,
+        status: '실패',
+        error: error.response?.data?.message || '알 수 없는 오류'
+      }));
     }
-    return Promise.all(batch.map(async ({ email, name }) => {
-      try {
-        // 제목과 본문에서 {담당자} 치환
-        const personalizedSubject = EMAIL_SUBJECT.replace(/{담당자}/g, name);
-        const personalizedContent = content.replace(/{담당자}/g, name);
-
-        await axios.post('https://api.sendgrid.com/v3/mail/send', {
-          personalizations: [{ to: [{ email }], subject: personalizedSubject }],
-          from: { email: FROM_EMAIL },
-          content: [{ type: 'text/html', value: personalizedContent }]
-        }, {
-          headers: {
-            Authorization: `Bearer ${SENDGRID_API_KEY}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        return { email, status: '성공', error: '' };
-      } catch (error) {
-        const message = error.response?.data?.errors?.length > 0 
-          ? error.response.data.errors[0].message 
-          : error.message;
-        return { 
-          email, 
-          status: '실패', 
-          error: ERROR_MESSAGES[message] || `발송 오류: ${message}` 
-        };
-      }
-    }));
   };
+  
 
   // 전체 발송 프로세스
   const sendBulkEmails = async (emails) => {
@@ -264,11 +264,15 @@ function App() {
     try {
       const validEmails = await parseCSV(file);
       const sendResults = await sendBulkEmails(validEmails);
-      setResults(sendResults);
+      setResults(sendResults.map(result => ({
+        email: result.email,
+        status: result.status,
+        error: result.error || '-'
+      })));
     } catch (error) {
       alert(`오류 발생: ${error.message}`);
     }
-  };
+  };  
 
   // 결과 다운로드
   const downloadResults = () => {
@@ -285,12 +289,12 @@ function App() {
   return (
     <div className="app-container email-dashboard">
       <div style={{display:"flex", justifyContent:"center", alignItems:"center"}}>
-        <h1 className="main-title">대량 이메일 발송 시스템</h1>
+        <h1 className="main-title">{mailservice} 대량 이메일 발송 시스템</h1>
         <a style={{margin:"0 20px"}}href="/">새로고침</a>
       </div>
       <div className="notification-box warning-banner">
         <p className="warning-text">※ 주의사항: 발송은 1회만 가능하며, 재발송 시 페이지를 새로고침해야 합니다</p>
-        <p className="warning-text">※ 발송 IP: {SENDGRID_IP} (스팸 필터 허용 필요)</p>
+        <p className="warning-text">※ Brevo IP 풀 사용 (별도 화이트리스트 필요 없음)</p>
       </div>
 
       <div className="sample-section download-guide">
