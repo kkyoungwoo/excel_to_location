@@ -5,15 +5,14 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import "./App.css"
 
-// Brove 자동 이메일 발송 웹사이트
-const mailservice = "Brove"
+// brevo 자동 이메일 발송 웹사이트
+const mailservice = "brevo"
 
 // #################### 설정 영역 - 필요시 수정 ####################
-const BREVO_API_KEY = 'your_brevo_api_key'; // Brevo API 키
+const BREVO_API_KEY = ''; // Brevo API 키
 const FROM_EMAIL = 'your_email@example.com'; // 발신자 이메일 (Brevo 인증 필요)
 const BATCH_SIZE = 50; // 1회 발송량 (한 번에 보낼 이메일 수)
 const DELAY_TIME = 2000; // 배치 간 지연 시간(ms)
-const SENDGRID_IP = '???.???.???.???'; // SendGrid 발송 IP (사용자 계정에서 확인 필요)
 // ##############################################################
 
 
@@ -188,8 +187,9 @@ function App() {
         });
   
         // 여기서 valid 배열의 각 객체를 렌더링 가능하도록 문자열로 변환
-        const validEmails = valid.map(v => v.email);
-        resolve(validEmails);
+        //const validEmails = valid.map(v => v.email);
+        //아래에꺼 또는 이걸로 진행!!resolve(validEmails);
+        resolve(valid); // 전체 객체 반환
       };
     });
   };
@@ -201,60 +201,91 @@ function App() {
   // 배치 발송 시 Brevo의 배치 기능 활용
   const sendBatchEmails = async (batch) => {
     try {
-      console.log("이메일 발송 요청 시작:", batch);
-  
-      const response = await axios.post('https://api.brevo.com/v3/smtp/email', {
-        sender: { email: FROM_EMAIL },
-        to: batch.map(({ email }) => ({ email })),
-        subject: batch.map(({ name }) => EMAIL_SUBJECT.replace(/{담당자}/g, name)),
-        htmlContent: batch.map(({ name }) => content.replace(/{담당자}/g, name))
-      }, {
-        headers: {
-          'api-key': BREVO_API_KEY,
-          'Content-Type': 'application/json'
+        console.log("📌 배치 데이터 확인:", JSON.stringify(batch, null, 2));
+
+        if (!Array.isArray(batch) || batch.length === 0) {
+            throw new Error("배치 데이터가 비어있거나 배열이 아닙니다.");
         }
-      });
-  
-      console.log("이메일 발송 성공:", response.data);
-  
-      return batch.map(email => ({ email, status: '성공', error: '' }));
+
+        // 이메일 수신자 리스트 생성
+        const emailRequests = batch.map(({ email, name }) => {
+            return axios.post(
+                'https://api.brevo.com/v3/smtp/email',
+                {
+                    sender: { email: FROM_EMAIL },
+                    to: [{ email }],
+                    subject: EMAIL_SUBJECT.replace(/{담당자}/g, name || "고객님"),
+                    htmlContent: content.replace(/{담당자}/g, name || "고객님")
+                },
+                {
+                    headers: {
+                        'api-key': BREVO_API_KEY,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+        });
+
+        // 모든 요청 실행
+        const responses = await Promise.allSettled(emailRequests);
+
+        // 결과 처리
+        return responses.map((res, index) => ({
+            email: batch[index].email,
+            name: batch[index].name,
+            status: res.status === 'fulfilled' ? '성공' : '실패',
+            error: res.status === 'rejected' ? res.reason.response?.data?.message || res.reason.message : ''
+        }));
+
     } catch (error) {
-      console.error("이메일 발송 실패:", error.response?.data || error.message);
-  
-      return batch.map(email => ({
-        email,
-        status: '실패',
-        error: error.response?.data?.message || '알 수 없는 오류'
-      }));
+        console.error("❌ 이메일 발송 실패:", error.response?.data || error.message);
+
+        return batch.map(({ email, name }) => ({
+            email,
+            name,
+            status: '실패',
+            error: error.response?.data?.message || error.message || '알 수 없는 오류'
+        }));
     }
-  };
-  
+};
+
 
   // 전체 발송 프로세스
   const sendBulkEmails = async (emails) => {
     if (emails.length === 0) {
-    alert("발송할 유효한 이메일이 없습니다.");
-    return;
-  }
-  setLoading(true);
+      alert("발송할 유효한 이메일이 없습니다.");
+      return;
+    }
+  
+    setLoading(true);
     const totalBatches = Math.ceil(emails.length / BATCH_SIZE);
     const results = [];
-
+  
     for (let i = 0; i < totalBatches; i++) {
-      const batch = emails.slice(i * BATCH_SIZE, (i + 1) * BATCH_SIZE);
+      let batch = emails.slice(i * BATCH_SIZE, (i + 1) * BATCH_SIZE);
+  
+      // 🟢 이메일과 이름 모두 포함되도록 수정
+      batch = batch.map(user => ({
+        email: user.email,      // 이메일 추가
+        name: user.name || "고객님"  // 이름 없으면 기본값 "고객님"
+      }));
+  
+      console.log("📌 배치 데이터 확인:", JSON.stringify(batch, null, 2)); // 배치 데이터 확인
+  
+      // sendBatchEmails가 email을 정상적으로 받는지 확인
       const batchResults = await sendBatchEmails(batch);
       results.push(...batchResults);
-
+  
       if (i < totalBatches - 1) {
         await delay(DELAY_TIME);
       }
     }
-
+  
     setLoading(false);
     setIsSent(true);
     return results;
   };
-
+  
 
   // 폼 제출 핸들러
   const handleSubmit = async (e) => {
@@ -295,6 +326,7 @@ function App() {
       <div className="notification-box warning-banner">
         <p className="warning-text">※ 주의사항: 발송은 1회만 가능하며, 재발송 시 페이지를 새로고침해야 합니다</p>
         <p className="warning-text">※ Brevo IP 풀 사용 (별도 화이트리스트 필요 없음)</p>
+        <p className="warning-text">{BATCH_SIZE}개씩 {DELAY_TIME}초 마다 발송</p>
       </div>
 
       <div className="sample-section download-guide">
