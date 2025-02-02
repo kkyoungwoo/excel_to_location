@@ -10,7 +10,7 @@ const mailservice = "brevo"
 
 // #################### 설정 영역 - 필요시 수정 ####################
 const BREVO_API_KEY = ''; // Brevo API 키
-const FROM_EMAIL = 'your_email@example.com'; // 발신자 이메일 (Brevo 인증 필요)
+const FROM_EMAIL = 'rlaakfejd2@gmail.com'; // 발신자 이메일 (Brevo 인증 필요)
 const BATCH_SIZE = 50; // 1회 발송량 (한 번에 보낼 이메일 수)
 const DELAY_TIME = 2000; // 배치 간 지연 시간(ms)
 // ##############################################################
@@ -20,12 +20,12 @@ const DELAY_TIME = 2000; // 배치 간 지연 시간(ms)
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // 기본 HTML 제목 템플릿
-const EMAIL_SUBJECT = "{담당자}님 외국인 근로자 고용 관련 미팅을 요청드립니다"; // 변수를 설정
+const EMAIL_SUBJECT = "외국인 근로자 고용 관련 미팅을 요청드립니다"; // 변수를 설정
 
 // 기본 HTML 내용 템플릿
 const defaultTemplate = `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; padding: 50px 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
-  <h1 style="color: #2a52be; font-size: 24px; text-align: left;">안녕하세요, {담당자}님!</h1>  
+  <h1 style="color: #2a52be; font-size: 24px; text-align: left;">안녕하세요</h1>  
   <div style="background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05); margin-top: 20px;">
     <p style="font-size: 16px; color: #333; text-align: left; line-height: 1.6;">
 
@@ -62,7 +62,6 @@ const defaultTemplate = `
   E-Mail: <a href="mailto:workvisahr@naver.com" style="color: #1a73e8;">workvisahr@naver.com</a><br>
 </p>
   <div style="text-align: right; font-size: 12px; color: #999; margin-top: 40px;">
-    <a href="{{unsubscribe_url}}" style="color: #999; text-decoration: none;">수신 거부</a>
   </div>
 </div>
 `;
