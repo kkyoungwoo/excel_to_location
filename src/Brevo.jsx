@@ -20,7 +20,7 @@ const DELAY_TIME = 2000; // 배치 간 지연 시간(ms)
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // 기본 HTML 제목 템플릿
-const EMAIL_SUBJECT = "외국인 근로자 고용 관련 미팅을 요청드립니다"; // 변수를 설정
+const EMAIL_SUBJECT = "s외국인 근로자 고용 관련 미팅을 요청드립니다"; // 변수를 설정
 
 // 기본 HTML 내용 템플릿
 const defaultTemplate = `
